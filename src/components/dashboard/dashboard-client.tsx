@@ -4,7 +4,8 @@ import { DataChart } from './data-chart';
 import { HistoricalData } from './historical-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Activity, History } from 'lucide-react';
+import { Activity, History, MapPin } from 'lucide-react';
+import { GPSLocation } from './gps-location';
 
 export function DashboardClient() {
   const { fireData, isFireDetected } = useFireData();
@@ -17,6 +18,7 @@ export function DashboardClient() {
             <TabsList>
                 <TabsTrigger value="live"><Activity className="mr-2"/>Live Feed</TabsTrigger>
                 <TabsTrigger value="historical"><History className="mr-2"/>Historical Data</TabsTrigger>
+                <TabsTrigger value="gps"><MapPin className="mr-2"/>GPS Location</TabsTrigger>
             </TabsList>
         </div>
 
@@ -38,6 +40,9 @@ export function DashboardClient() {
         </TabsContent>
         <TabsContent value="historical" className="mt-6">
             <HistoricalData />
+        </TabsContent>
+        <TabsContent value="gps" className="mt-6">
+            <GPSLocation />
         </TabsContent>
       </Tabs>
     </div>

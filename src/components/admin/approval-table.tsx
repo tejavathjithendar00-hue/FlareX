@@ -14,25 +14,67 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
+import emailjs from 'emailjs-com';
 
 export function ApprovalTable() {
   const [users, setUsers] = useState<PendingUser[]>(pendingUsersData);
   const { toast } = useToast();
 
+  const generatePassword = () => {
+    return Math.random().toString(36).slice(-8);
+  };
+
   const handleAction = (userId: string, action: 'approve' | 'reject') => {
     const user = users.find(u => u.id === userId);
     if (!user) return;
 
-    // Mock sending email to user
-    console.log(`Simulating sending ${action} email to ${user.email}...`);
-    
-    // In a real app, this would be an API call
-    setUsers(prevUsers => prevUsers.filter(u => u.id !== userId));
+    const serviceId = 'service_mun09hf';
+    const templateId = 'template_jiiefjk';
+    const publicKey = '3AEdG3eILAXI_6QIt';
 
-    toast({
-      title: `User ${action === 'approve' ? 'Approved' : 'Rejected'}`,
-      description: `${user.name}'s application has been ${action === 'approve' ? 'approved' : 'rejected'}.`,
-    });
+    let templateParams: any = {
+      to_name: user.name,
+      to_email: user.email,
+    };
+
+    if (action === 'approve') {
+      const password = generatePassword();
+      templateParams = {
+        ...templateParams,
+        status: 'approved',
+        username: user.email,
+        password: password,
+      };
+
+      // Store approved user in local storage for login simulation
+      const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
+      approvedUsers.push({ email: user.email, password, name: user.name, role: 'user' });
+      localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
+    } else {
+      templateParams = {
+        ...templateParams,
+        status: 'rejected',
+      };
+    }
+
+    emailjs.send(serviceId, templateId, templateParams, publicKey)
+      .then((response) => {
+        console.log('SUCCESS!', response.status, response.text);
+        toast({
+          title: `User ${action === 'approve' ? 'Approved' : 'Rejected'}`,
+          description: `${user.name}'s application has been ${action === 'approve' ? 'approved' : 'rejected'}. A notification has been sent.`,
+        });
+      })
+      .catch((err) => {
+        console.error('FAILED...', err);
+        toast({
+          variant: 'destructive',
+          title: 'Email Failed',
+          description: `Could not send notification email to ${user.name}.`,
+        });
+      });
+
+    setUsers(prevUsers => prevUsers.filter(u => u.id !== userId));
   };
 
   const pendingUsers = users.filter(user => user.status === 'pending');

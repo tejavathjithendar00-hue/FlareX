@@ -18,7 +18,7 @@ type User = {
 type AuthContextType = {
   user: User | null;
   loading: boolean;
-  login: (email: string) => void;
+  login: (email: string, role: 'user' | 'admin') => void;
   logout: () => void;
 };
 
@@ -112,12 +112,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = (email: string) => {
+  const login = (email: string, role: 'user' | 'admin') => {
     setLoading(true);
-    const newUser: User =
-      email.toLowerCase() === 'admin'
-        ? { name: 'Admin', email: 'admin', role: 'admin' }
-        : { name: 'Station User', email: email, role: 'user' };
+    let newUser: User;
+    if (role === 'admin') {
+      newUser = { name: 'Admin', email, role: 'admin' };
+    } else {
+       const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
+       const approvedUser = approvedUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
+       newUser = { name: approvedUser?.name || 'Station User', email, role: 'user' };
+    }
     
     localStorage.setItem('fireResponseUser', JSON.stringify(newUser));
     setUser(newUser);

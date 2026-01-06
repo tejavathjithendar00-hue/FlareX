@@ -20,7 +20,7 @@ export default function LoginPage() {
         <Card>
             <CardHeader>
                 <CardTitle>Welcome Back</CardTitle>
-                <CardDescription>Enter your credentials to continue.</CardDescription>
+                <CardDescription>Enter your credentials to continue. Admin email is forestnodeflarex@gmail.com</CardDescription>
             </CardHeader>
             <CardContent>
                 <LoginForm />

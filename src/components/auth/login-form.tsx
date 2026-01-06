@@ -41,20 +41,27 @@ export function LoginForm() {
     // Mock authentication
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (values.email.toLowerCase() === 'admin' && values.password === 'FlareX@BBJMSV') {
-      login('admin');
-    } else if (values.email.toLowerCase() !== 'admin' && values.password.length > 0) {
-      // For any other approved user, we'll just log them in for this demo.
-      // In a real app, you'd validate their credentials against a database.
-      login(values.email);
+    const lowerCaseEmail = values.email.toLowerCase();
+
+    if (lowerCaseEmail === 'forestnodeflarex@gmail.com' && values.password === 'FlareX@BBJMSV') {
+      login('forestnodeflarex@gmail.com', 'admin');
     } else {
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: 'Invalid username or password. Please try again.',
-      });
-      setIsLoading(false);
-      return;
+      const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
+      const approvedUser = approvedUsers.find(
+        (u: any) => u.email.toLowerCase() === lowerCaseEmail && u.password === values.password
+      );
+
+      if (approvedUser) {
+        login(approvedUser.email, 'user');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: 'Invalid email or password. Please try again or wait for approval.',
+        });
+        setIsLoading(false);
+        return;
+      }
     }
   }
 
@@ -66,9 +73,9 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email or Username</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="user@example.com or admin" {...field} />
+                <Input placeholder="user@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
