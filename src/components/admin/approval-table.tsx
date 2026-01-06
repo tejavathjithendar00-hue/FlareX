@@ -37,29 +37,24 @@ export function ApprovalTable() {
     const templateId = 'template_jiiefjk';
     const publicKey = '3AEdG3eILAXI_6QIt';
 
-    let templateParams: any = {
-      to_name: user.name,
-      to_email: user.email,
-    };
-
+    let message_body = '';
     if (action === 'approve') {
       const password = generatePassword();
-      templateParams = {
-        ...templateParams,
-        status: 'approved',
-        username: user.email,
-        password: password,
-      };
-
+      message_body = `Your registration has been approved. You can now log in with the following credentials: Username: ${user.email}, Password: ${password}`;
+      
       const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
       approvedUsers.push({ email: user.email, password, name: user.name, role: 'user' });
       localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
     } else {
-      templateParams = {
-        ...templateParams,
-        status: 'rejected',
-      };
+      message_body = 'We regret to inform you that your registration has been rejected.';
     }
+
+    const templateParams = {
+      to_name: user.name,
+      to_email: user.email,
+      message_body: message_body,
+    };
+
 
     emailjs.send(serviceId, templateId, templateParams, publicKey)
       .then((response) => {
@@ -74,7 +69,7 @@ export function ApprovalTable() {
         toast({
           variant: 'destructive',
           title: 'Email Failed',
-          description: `Could not send notification email to ${user.name}.`,
+          description: `Could not send notification email to ${user.name}. Please check EmailJS configuration.`,
         });
       });
 
