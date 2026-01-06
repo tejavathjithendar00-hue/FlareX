@@ -42,11 +42,12 @@ export function ApprovalTable() {
     if (action === 'approve') {
       const password = generatePassword();
       templateParams = {
-        to_name: user.name,
+        title: 'Registration Approved',
+        name: user.name,
+        message: `Congratulations! Your registration has been approved. You can now log in using your email and the following password: ${password}`,
+        user_email: user.email,
         to_email: user.email,
-        user_password: password,
-        verification_link: `${window.location.origin}/login`,
-        message_body: 'Congratulations! Your registration has been approved. You can now log in using the credentials in this email.',
+        'approval-name': 'FireResponse Admin',
       };
       
       const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
@@ -54,11 +55,12 @@ export function ApprovalTable() {
       localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
     } else {
       templateParams = {
-        to_name: user.name,
+        title: 'Registration Update',
+        name: user.name,
+        message: 'We regret to inform you that your registration application has been rejected at this time. Please contact support for more information.',
+        user_email: user.email,
         to_email: user.email,
-        user_password: 'N/A',
-        verification_link: `${window.location.origin}/signup`,
-        message_body: 'We regret to inform you that your registration application has been rejected at this time.',
+        'approval-name': 'FireResponse Admin',
       };
     }
 
