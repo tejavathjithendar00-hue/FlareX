@@ -37,23 +37,30 @@ export function ApprovalTable() {
     const templateId = 'template_jiiefjk';
     const publicKey = '3AEdG3eILAXI_6QIt';
 
-    let message_body = '';
+    let templateParams: Record<string, string>;
+
     if (action === 'approve') {
       const password = generatePassword();
-      message_body = `Your registration has been approved. You can now log in with the following credentials: Username: ${user.email}, Password: ${password}`;
+      templateParams = {
+        to_name: user.name,
+        to_email: user.email,
+        user_password: password,
+        verification_link: `${window.location.origin}/login`,
+        message_body: 'Congratulations! Your registration has been approved. You can now log in using the credentials in this email.',
+      };
       
       const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
       approvedUsers.push({ email: user.email, password, name: user.name, role: 'user' });
       localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
     } else {
-      message_body = 'We regret to inform you that your registration has been rejected.';
+      templateParams = {
+        to_name: user.name,
+        to_email: user.email,
+        user_password: 'N/A',
+        verification_link: `${window.location.origin}/signup`,
+        message_body: 'We regret to inform you that your registration application has been rejected at this time.',
+      };
     }
-
-    const templateParams = {
-      to_name: user.name,
-      to_email: user.email,
-      message_body: message_body,
-    };
 
 
     emailjs.send(serviceId, templateId, templateParams, publicKey)
