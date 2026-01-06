@@ -135,11 +135,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
   
-  const authContextValue = useMemo(() => ({ user, loading, login, logout }), [user, loading, router]);
+  const authContextValue = useMemo(() => ({ user, loading, login, logout }), [user, loading]);
 
   // Fire Data State
   const [fireData, setFireData] = useState<TemperatureData[]>([]);
   const [isFireDetected, setIsFireDetected] = useState(false);
+  const [isSimulatingFire, setIsSimulatingFire] = useState(false);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -147,26 +149,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const now = new Date();
         const newTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
         
-        const newTemp = isFireDetected 
+        const newTemp = isSimulatingFire
           ? Math.floor(Math.random() * 50) + 100 // High temp for fire: 100-150
-          : Math.floor(Math.random() * 15) + 20; // Normal temp: 20-35
+          : Math.floor(Math.random() * 25) + 20; // Normal temp: 20-45
 
         const newDataPoint: TemperatureData = { time: newTime, temperature: newTemp };
         
         const updatedData = [...prevData, newDataPoint];
+        if(newTemp > 40) {
+          setIsFireDetected(true);
+        } else {
+          if(!isSimulatingFire) {
+            setIsFireDetected(false);
+          }
+        }
         return updatedData.length > 30 ? updatedData.slice(-30) : updatedData;
       });
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [isFireDetected]);
+  }, [isSimulatingFire]);
 
   const toggleFire = useCallback(() => {
-    setIsFireDetected(prev => !prev);
-    if (!isFireDetected) { // When toggling to 'fire detected'
+    setIsSimulatingFire(prev => {
+      const newSimulatingState = !prev;
+      if (newSimulatingState) {
+        setIsFireDetected(true); // When simulation starts, fire is detected
+      } else {
+        // When simulation stops, let the interval logic decide if fire is detected
+        // based on temperature. We can force a check here or just wait for next interval.
+        const lastTemp = fireData.length > 0 ? fireData[fireData.length-1].temperature : 0;
+        if(lastTemp <= 40) {
+            setIsFireDetected(false);
+        }
+      }
       setFireData([]); // Clear previous data for a fresh start
-    }
-  }, [isFireDetected]);
+      return newSimulatingState;
+    });
+  }, []);
 
   const fireDataContextValue = useMemo(() => ({ fireData, isFireDetected, toggleFire }), [fireData, isFireDetected, toggleFire]);
 

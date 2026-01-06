@@ -29,7 +29,7 @@ export function DashboardClient() {
                     <CardDescription>
                         Displaying real-time sensor data, updating every 2 seconds.
                         <span className={`ml-2 font-semibold ${isFireDetected ? 'text-destructive' : 'text-green-600'}`}>
-                            Status: {isFireDetected ? 'FIRE DETECTED' : 'Normal'}
+                            Status: {isFireDetected ? 'RED ALERT: HIGH TEMPERATURE' : 'Normal'}
                         </span>
                     </CardDescription>
                 </CardHeader>

@@ -35,19 +35,22 @@ export function GPSLocation() {
 
   useEffect(() => {
     fetchLocation();
+    const intervalId = setInterval(fetchLocation, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>GPS Location</CardTitle>
+        <CardTitle>Live GPS Location</CardTitle>
         <CardDescription>
-          Real-time GPS coordinates of the monitoring station or vehicle.
+          Real-time GPS coordinates of the monitoring station or vehicle, refreshing automatically.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex min-h-[200px] flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-6">
-          {loading ? (
+          {loading && !location ? (
             <>
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               <p className="text-muted-foreground">Fetching GPS coordinates...</p>
@@ -62,15 +65,15 @@ export function GPSLocation() {
           ) : location ? (
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Current Location:</p>
-              <p className="text-2xl font-bold">
-                Lat: {location.latitude.toFixed(6)}
-              </p>
-              <p className="text-2xl font-bold">
-                Lon: {location.longitude.toFixed(6)}
-              </p>
-              <Button onClick={fetchLocation} className="mt-4">
-                Refresh Location
-              </Button>
+              <div className='flex items-center gap-4'>
+                <p className="text-2xl font-bold">
+                  Lat: {location.latitude.toFixed(6)}
+                </p>
+                <p className="text-2xl font-bold">
+                  Lon: {location.longitude.toFixed(6)}
+                </p>
+                {loading && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
+              </div>
             </div>
           ) : (
              <p className="text-muted-foreground">Could not retrieve location.</p>
