@@ -65,18 +65,18 @@ export function ApprovalTable() {
 
     emailjs.send(serviceId, templateId, templateParams, publicKey)
       .then((response) => {
-        console.log('SUCCESS!', response.status, response.text);
+        console.log('EmailJS Success:', response);
         toast({
           title: `User ${action === 'approve' ? 'Approved' : 'Rejected'}`,
           description: `${user.name}'s application has been ${action === 'approve' ? 'approved' : 'rejected'}. A notification has been sent.`,
         });
       })
       .catch((err) => {
-        console.error('FAILED...', err);
+        console.error('EmailJS Error:', err);
         toast({
           variant: 'destructive',
           title: 'Email Failed',
-          description: `Could not send notification email to ${user.name}. Please check EmailJS configuration.`,
+          description: `Could not send notification email. Please check console for details.`,
         });
       });
 
