@@ -43,42 +43,48 @@ export function Header() {
             <Label htmlFor="fire-simulation-switch" className="text-sm font-medium">Simulate Fire</Label>
             <Switch id="fire-simulation-switch" checked={isFireDetected} onCheckedChange={toggleFire} />
           </div>
-          <nav className="flex items-center space-x-1">
+          <nav className="flex items-center space-x-2">
             {user && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={`https://avatar.vercel.sh/${user.email}.png`} alt={user.name} />
-                      <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {user.role === 'admin' && (
-                    <DropdownMenuItem disabled>
-                      <Shield className="mr-2" />
-                      <span>Admin Role</span>
+              <>
+                <Button variant="outline" size="sm" onClick={logout} className="hidden sm:flex">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={`https://avatar.vercel.sh/${user.email}.png`} alt={user.name} />
+                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {user.role === 'admin' && (
+                      <DropdownMenuItem disabled>
+                        <Shield className="mr-2" />
+                        <span>Admin Role</span>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem>
+                      <UserIcon className="mr-2" />
+                      <span>Profile</span>
                     </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem>
-                    <UserIcon className="mr-2" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout}>
-                    <LogOut className="mr-2" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout}>
+                      <LogOut className="mr-2" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             )}
           </nav>
         </div>
