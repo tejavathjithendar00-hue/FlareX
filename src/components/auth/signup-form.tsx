@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { MailCheck } from 'lucide-react';
+import type { PendingUser } from '@/lib/data';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -50,11 +51,17 @@ export function SignupForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    // Mock backend registration & email sending
     await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log('New registration submitted:', values);
-    console.log('Simulating sending email to admin...');
-    
+
+    const pendingRegistrations = JSON.parse(localStorage.getItem('pendingRegistrations') || '[]');
+    const newRegistration: PendingUser = {
+      id: new Date().getTime().toString(),
+      ...values,
+      status: 'pending',
+    };
+    pendingRegistrations.push(newRegistration);
+    localStorage.setItem('pendingRegistrations', JSON.stringify(pendingRegistrations));
+
     toast({
       title: 'Registration Submitted',
       description: 'Your application has been sent for approval.',

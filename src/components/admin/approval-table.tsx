@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { pendingUsersData, type PendingUser } from '@/lib/data';
+import type { PendingUser } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Check, X, ExternalLink } from 'lucide-react';
 import {
@@ -17,8 +17,13 @@ import { MoreHorizontal } from 'lucide-react';
 import emailjs from 'emailjs-com';
 
 export function ApprovalTable() {
-  const [users, setUsers] = useState<PendingUser[]>(pendingUsersData);
+  const [users, setUsers] = useState<PendingUser[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const pendingRegistrations = JSON.parse(localStorage.getItem('pendingRegistrations') || '[]');
+    setUsers(pendingRegistrations);
+  }, []);
 
   const generatePassword = () => {
     return Math.random().toString(36).slice(-8);
@@ -46,7 +51,6 @@ export function ApprovalTable() {
         password: password,
       };
 
-      // Store approved user in local storage for login simulation
       const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
       approvedUsers.push({ email: user.email, password, name: user.name, role: 'user' });
       localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
@@ -74,10 +78,10 @@ export function ApprovalTable() {
         });
       });
 
-    setUsers(prevUsers => prevUsers.filter(u => u.id !== userId));
+    const updatedUsers = users.filter(u => u.id !== userId);
+    setUsers(updatedUsers);
+    localStorage.setItem('pendingRegistrations', JSON.stringify(updatedUsers));
   };
-
-  const pendingUsers = users.filter(user => user.status === 'pending');
 
   return (
     <div className="rounded-md border">
@@ -91,8 +95,8 @@ export function ApprovalTable() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {pendingUsers.length > 0 ? (
-                pendingUsers.map(user => (
+                {users.length > 0 ? (
+                users.map(user => (
                     <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell className="hidden text-muted-foreground md:table-cell">
