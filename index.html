@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>FlareX Admin Panel</h1>
+    <button onclick="sendApproval('user@example.com', 'Tejavath')">Approve User</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        emailjs.init("3AEdG3eILAXI_6QIt");
+        function sendApproval(email, name) {
+            const templateParams = {
+                name: name,
+                message: "Approved!",
+                verification_link: "https://fire-response-88842.web.app/login.html",
+                to_email: email
+            };
+            emailjs.send("service_mun09hf", "template_jiiefjk", templateParams)
+                .then(() => alert("Sent!"))
+                .catch(err => console.log(err));
+        }
+    </script>
+</body>
+</html>
