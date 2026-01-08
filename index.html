@@ -6,18 +6,31 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
+    // Initialize inside a function to ensure the library is ready
+    window.onload = function() {
         emailjs.init("3AEdG3eILAXI_6QIt");
-        function sendApproval(email, name) {
-            const templateParams = {
-                name: name,
-                message: "Approved!",
-                verification_link: "https://fire-response-88842.web.app/login.html",
-                to_email: email
-            };
-            emailjs.send("service_mun09hf", "template_jiiefjk", templateParams)
-                .then(() => alert("Sent!"))
-                .catch(err => console.log(err));
-        }
-    </script>
+    };
+
+    function sendApproval(email, name) {
+        // Show a "Processing" message so you know the click worked
+        console.log("Button clicked for:", email);
+        
+        const templateParams = {
+            name: name,
+            message: "Approved!",
+            verification_link: "https://fire-response-88842.web.app/login.html",
+            to_email: email
+        };
+
+        emailjs.send("service_mun09hf", "template_jiiefjk", templateParams)
+            .then(() => {
+                alert("Email Sent Successfully!");
+            })
+            .catch(err => {
+                alert("Error: " + JSON.stringify(err));
+                console.error("EmailJS Error:", err);
+            });
+    }
+</script>
 </body>
 </html>
